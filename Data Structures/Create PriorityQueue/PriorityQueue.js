@@ -41,7 +41,7 @@ function PriorityQueue()
 };
 */
 
-class PriorityQueue
+export default class PriorityQueue
 {
     constructor()
     {
@@ -84,4 +84,3 @@ class PriorityQueue
     }
 };
 
-//export default PriorityQueue;

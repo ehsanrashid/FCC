@@ -63,7 +63,7 @@ function HashTable()
 }
 */
 
-class HashTable
+export default class HashTable
 {
     constructor()
     {

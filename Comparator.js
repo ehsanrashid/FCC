@@ -6,7 +6,7 @@ export default class Comparator
                     || Compare.defaultCompareFunction;
     }
 
-    static defaultCompareFunction (o1, o2)
+    static defaultCompareFunction(o1, o2)
     {
         return o1 === o2 ?
 				0 :
@@ -14,7 +14,7 @@ export default class Comparator
     }
     
     // Returns true if equal, else returns false
-    equal (o1, o2)
+    equal(o1, o2)
     {
         return this.compare(o1, o2) === 0;
     }

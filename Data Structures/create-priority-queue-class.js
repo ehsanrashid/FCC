@@ -18,9 +18,9 @@ function PriorityQueue()
         return this;
     }
 
+	// Return the Item->data (0)
     this.dequeue = function()
     {
-        // return the Item without the priority number;
         return this.collection.shift()[0];
     }
 
@@ -62,9 +62,9 @@ class PriorityQueue
         return this;
     }
     
+    // Return the Item->data (0)
     dequeue()
     {
-        // return the Item without the priority number;
         return this.collection.shift()[0];
     }
 

@@ -1,4 +1,7 @@
 /*
+ * Contructor Function
+ * */
+/*
 //let PriorityQueue = function()
 function PriorityQueue()
 {

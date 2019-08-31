@@ -1,230 +1,491 @@
-import LinkedListNode from './LinkedListNode';
-import Comparator from '../../Comparator';
-
-export default class LinkedList
+/*
+ * Function
+ * */
+/*
+function LinkedList()
 {
-  
-    constructor(comparatorFunction)
-    {
-        this.head = null;
-        this.tail = null;
-        this.compare = new Comparator(comparatorFunction);
-    }
+	function Node(element, next = null)
+	{
+		this.element = element;
+		this.next = next;
+	}
 
-    // puts value at the start of the list
-    prepend(value)
-    {
-        // the current head becomes the next of the new node.
-        const newNode = new LinkedListNode(value, this.head);
-        
-        // if the list is empty, then newNode is both the head and the tail.    
-        if (this.head === null
-         || this.tail === null)
-        {
-            this.head = newNode;
-            this.tail = newNode
-        }
-        // if list is not empty, then attach the newNode at the head
-        else
-        {
-            this.head = newNode;
-        }
-        
-        return this;
-    }
-    // puts value at the end of the list
-    append(value)
-    {
-        const newNode = new LinkedListNode(value, null)
+	let headNode = null;
+	
+	this.head = function()
+	{
+		return headNode;
+	}
+	this.tail = function()
+	{
+		let tailNode = headNode;
+		if (tailNode !== null)
+		{
+			while (tailNode.next !== null)
+			{
+				tailNode = tailNode.next;
+			}
+		}
+		return tailNode;
+	}
+	
+	this.isEmpty = function()
+	{
+		return headNode === null;
+	}
 
-        // if the list is empty, then newNode is both the head and the tail
-        if (this.head === null
-         || this.tail === null)
-        {
-            this.head = newNode;
-            this.tail = newNode;
-        }
-        // if list is not empty, then attach the newNode at the tail.
-        else
-        {
-            this.tail.next = newNode;
-            this.tail = newNode;
-        }
-        
-        return this;
-    }
+	this.size = function()
+	{
+		let size = 0;
+		let node = headNode;
+		while (node !== null)
+		{
+			node = node.next;
+			++size;
+		}
+		return size;
+	}
 
-    // delete all occurences of 'value' inside the list
-    delete(value)
-    {  
-        if (this.head === null)
-        {
-            return null;   // if the list is empty, we cannot delete anything.
-        }
+	this.at = function(index)
+	{
+		for (let prevNode = null, currNode = headNode, currIndex = 0;
+			 currNode !== null;
+			 prevNode = currNode, currNode = currNode.next, ++currIndex)
+		{
+			if (currIndex === index)
+			{
+				return prevNode;
+			}
+		}
+		return undefined;
+	}
+	
+	this.add = function(element)
+	{
+		let newNode = new Node(element);
+		
+		let tailNode = this.tail();
+		if (tailNode === null)
+		{
+			headNode = newNode;
+		}
+		else
+		{
+			tailNode.next = newNode;
+		}
+	};
 
-        //let deletedNode = null;
+	this.addAt = function(index, element)
+	{
+		if ((this.isEmpty() && index !== 0)
+		 || index < 0 || index > this.size())
+		{
+			return false;
+		}
+		
+		//for (let prevNode = null, currNode = headNode, currIndex = 0;
+			 //currNode !== null;
+			 //prevNode = currNode, currNode = currNode.next, ++currIndex)
+		//{
+			//if (currIndex === index)
+			//{
+				//let newNode = new Node(element, currNode);
 
-        // if we are going to delete the head, then the next differing node must be made the head
-        while (this.head !== null
-            && this.compare.equal(this.head.value, value))
-        {
-            //deletedNode = this.head;
-            this.head = this.head.next;
-        }
+				//if (prevNode === null)
+				//{
+					//headNode = newNode;
+				//}
+				//else
+				//{
+					//prevNode.next = newNode;
+				//}
+				//return true;
+			//}
+		//}
+		//return false;
+		
+		
+		let prevNode = this.at(index);
+		if (prevNode === undefined)
+		{
+			return false;
+		}
+		if (prevNode === null)
+		{
+			headNode = new Node(element, headNode);
+		}
+		else
+		{
+			prevNode.next = new Node(element, prevNode.next);
+		}
+		return true;
+	}
 
-        // now the current node will be the last element from the above while loop
-        let currNode = this.head;
-        if (currNode !== null)
-        {
-            // if next node is to be deleted, then make next's next to be next
-            if (this.compare.equal(currNode.next.value, value))
-            {
-                //deletedNode = currNode.next;
-                currNode.next = currNode.next.next;
-            }
-            else
-            {
-                currNode = currNode.next // since the value were not equal, we move on to the next node.
-            }
+	this.remove = function(element)
+	{
+		if (this.isEmpty())
+		{
+			return;
+		}
+		for (let prevNode = null, currNode = headNode;
+			 currNode !== null;
+			 prevNode = currNode, currNode = currNode.next)
+		{
+			if (currNode.element === element)
+			{
+				if (prevNode === null)
+				{
+					headNode = currNode.next;
+				}
+				else
+				{
+					prevNode.next = currNode.next;
+				}
+				break;
+			}
+		}
+	}
 
-            // check if the tail must be deleted
-            if (this.compare.equal(this.tail.value, value))
-            {
-                this.tail = currNode;
-            }
-            //return deletedNode;
-        }
-    }
+	this.removeAt = function(index)
+	{
+		if (this.isEmpty()
+		 || index < 0 || index >= this.size())
+		{
+			return null;
+		}
+		
+		//for (let prevNode = null, currNode = headNode, currIndex = 0;
+			 //currNode !== null;
+			 //prevNode = currNode, currNode = currNode.next, ++currIndex)
+		//{
+			//if (currIndex === index)
+			//{
+				//let removedNode = currNode;
+				
+				//if (prevNode === null)
+				//{
+					//headNode = currNode.next;
+				//}
+				//else
+				//{
+					//prevNode.next = currNode.next;
+				//}
+				//return removedNode.element;
+			//}
+		//}
+		//return null;
+		
+		
+		let prevNode = this.at(index);
+		if (prevNode === undefined)
+		{
+			return null;
+		}
+		let removedNode;
+		if (prevNode === null)
+		{
+			removedNode = headNode;
+			headNode = headNode.next;
+		}
+		else
+		{
+			removedNode = prevNode.next;
+			prevNode.next = prevNode.next.next;
+		}
+		return removedNode.element;
+	}
 
-    find({value = undefined, compare = undefined})
-    {
-        // we traverse the list, trying to find the matching node, either with the value or with the callback
-        if (this.head === null)
-        {
-            // return null for empty linked-list
-            return null;
-        }
+	this.indexOf = function(element)
+	{
+		if (this.isEmpty())
+		{
+			return -1;
+		}
 
-        let currNode = this.head;  // starting with the current head
-        while (currNode !== null)
-        {
-            // if callback is given, we try tp find a match with it
-            if (compare !== undefined
-             && compare(currNode.value))
-            {
-                return currNode;
-            }
-            // if value is specified, we check by value
-            if (value !== undefined
-             && this.compare.equal(currNode.value, value))
-            {
-                return currNode;
-            }
+		for (let currNode = headNode, currIndex = 0;
+			 currNode !== null;
+			 currNode = currNode.next, ++currIndex)
+		{
+			if (currNode.element === element)
+			{
+				return currIndex;
+			}
+		}
+		return -1;
+	}
 
-            currNode = currNode.next;  // no match -> move on to the next node
-        }
-
-        return null;
-    }
-
-    deleteTail ()
-    {
-        const deletedTail = this.tail;
-        
-        if (this.head === this.tail)
-        {
-            // there was only one node, which was both head and tail, now the list becomes empty
-            this.head = null;
-            this.tail = null;
-            return deletedTail;
-        }
-
-        // if there are many nodes in the list
-        // traverse to the second last node, remove its connection to the "tail" by removing the "next" link 
-        let currNode = this.head;
-        while (currNode.next !== null)
-        {
-            if (currNode.next.next === null)
-            {
-                currNode.next = null  // removing the link
-            }
-            else
-            {
-                currNode = currNode.next;
-            }
-        }
-        // current node will become the tail now.
-        this.tail = currNode;
-        return deletedTail;
-    }
-
-    deleteHead ()
-    {
-        if (this.head === null)
-        {
-            return null;
-        }
-
-        const deletedHead = this.head;
-        // if there is a node after the current head, make it head
-        if (this.head.next !== null)
-        {
-            this.head = this.head.next;
-        }
-        // if there is no node after the current head, that means the list will now be empty.
-        else
-        {
-            this.head = null;
-            this.tail = null;
-        }
-        return deletedHead;
-    }
-
-    fromArray(values)
-    {
-        values.array.forEach(value =>
-        {
-            this.append(value);
-            return this;
-        });
-    }
-
-    toArray ()
-    {
-        const nodes = [];
-        let currNode = this.head;
-        while (currNode !== null)
-        {
-            nodes.push(currNode);
-            currNode = currNode.next;
-        }
-        return nodes;
-    }
-
-    reverse ()
-    {
-        let prevNode = null;
-        let nextNode = null;
-        let currNode = this.head;
-        while (currNode !== null)
-        {
-            // store the next node
-            nextNode = currNode.next;
-            // change the "next" of currNode to point to "previous" node
-            currNode.next = prevNode;
-            // move prevNode & current node one step forward
-            prevNode = currNode;
-            currNode = nextNode;
-        }
-        // reset head and tail
-        this.tail = this.head;
-        this.head = prevNode;
-        return this;
-    }
-
-    toString(callback)
-    {
-        return this.toArray().map(node => node.toString(callback)).toString();
-    }
+	this.elementAt = function(index)
+	{
+		if (this.isEmpty())
+		{
+			return undefined;
+		}
+		for (let currNode = headNode, currIndex = 0;
+			 currNode !== null;
+			 currNode = currNode.next, ++currIndex)
+		{
+			if (currIndex === index)
+			{
+				return currNode.element;
+			}
+		}
+		return undefined;
+	}
 
 }
+*/
+
+/*
+ * Class
+ * */
+//export
+class Node
+{
+	constructor(element, next = null)
+	{
+		this.element = element;
+		this.next = next;
+	}
+}
+
+//export
+class LinkedList
+{
+	constructor()
+	{
+		this.headNode = null;
+	}
+	
+	head()
+	{
+		return this.headNode;
+	}
+	
+	tail()
+	{
+		let tailNode = this.headNode;
+		if (tailNode !== null)
+		{
+			while (tailNode.next !== null)
+			{
+				tailNode = tailNode.next;
+			}
+		}
+		return tailNode;
+	}
+	
+	isEmpty()
+	{
+		return this.headNode === null;
+	}
+	
+	size()
+	{
+		let size = 0;
+		let node = this.headNode;
+		while (node !== null)
+		{
+			node = node.next;
+			++size;
+		}
+		return size;
+	}
+	
+	at(index)
+	{
+		for (let prevNode = null, currNode = this.headNode, currIndex = 0;
+			 currNode !== null;
+			 prevNode = currNode, currNode = currNode.next, ++currIndex)
+		{
+			if (currIndex === index)
+			{
+				return prevNode;
+			}
+		}
+		return undefined;
+	}
+	
+	add(element)
+	{
+		let newNode = new Node(element);
+		let tailNode = this.tail();
+		if (tailNode === null)
+		{
+			this.headNode = newNode;
+		}
+		else
+		{
+			tailNode.next = newNode;
+		}
+		
+		return this;
+	}
+	
+	addAt(index, element)
+	{
+		if ((this.isEmpty() && index !== 0)
+		 || index < 0 || index > this.size())
+		{
+			return false;
+		}
+		
+		//for (let prevNode = null, currNode = this.headNode, currIndex = 0;
+			 //currNode !== null;
+			 //prevNode = currNode, currNode = currNode.next, ++currIndex)
+		//{
+			//if (currIndex === index)
+			//{
+				//let newNode = new Node(element, currNode);
+
+				//if (prevNode === null)
+				//{
+					//this.headNode = newNode;
+				//}
+				//else
+				//{
+					//prevNode.next = newNode;
+				//}
+				//return true;
+			//}
+		//}
+		//return false;
+		
+		
+		let prevNode = this.at(index);
+		if (prevNode === undefined)
+		{
+			return false;
+		}
+		if (prevNode === null)
+		{
+			this.headNode = new Node(element, this.headNode);
+		}
+		else
+		{
+			prevNode.next = new Node(element, prevNode.next);
+		}
+		return true;
+	}
+	
+	remove(element)
+	{
+		if (this.isEmpty())
+		{
+			return;
+		}
+		for (let prevNode = null, currNode = this.headNode;
+			 currNode !== null;
+			 prevNode = currNode, currNode = currNode.next)
+		{
+			if (currNode.element === element)
+			{
+				if (prevNode === null)
+				{
+					this.headNode = currNode.next;
+				}
+				else
+				{
+					prevNode.next = currNode.next;
+				}
+				break;
+			}
+		}
+	}
+	
+	removeAt(index)
+	{
+		if (this.isEmpty()
+		 || index < 0 || index >= this.size())
+		{
+			return null;
+		}
+		
+		//for (let prevNode = null, currNode = this.headNode, currIndex = 0;
+			 //currNode !== null;
+			 //prevNode = currNode, currNode = currNode.next, ++currIndex)
+		//{
+			//if (currIndex === index)
+			//{
+				//let removedNode = currNode;
+				
+				//if (prevNode === null)
+				//{
+					//this.headNode = currNode.next;
+				//}
+				//else
+				//{
+					//prevNode.next = currNode.next;
+				//}
+				//return removedNode.element;
+			//}
+		//}
+		//return null;
+		
+		
+		let prevNode = this.at(index);
+		if (prevNode === undefined)
+		{
+			return null;
+		}
+		let removedNode;
+		if (prevNode === null)
+		{
+			removedNode = headNode;
+			this.headNode = this.headNode.next;
+		}
+		else
+		{
+			removedNode = prevNode.next;
+			prevNode.next = prevNode.next.next;
+		}
+		return removedNode.element;
+	}
+	
+	indexOf(element)
+	{
+		if (this.isEmpty())
+		{
+			return -1;
+		}
+
+		for (let currNode = this.headNode, currIndex = 0;
+			 currNode !== null;
+			 currNode = currNode.next, ++currIndex)
+		{
+			if (currNode.element === element)
+			{
+				return currIndex;
+			}
+		}
+		return -1;
+	}
+
+	elementAt(index)
+	{
+		if (this.isEmpty())
+		{
+			return undefined;
+		}
+		for (let currNode = this.headNode, currIndex = 0;
+			 currNode !== null;
+			 currNode = currNode.next, ++currIndex)
+		{
+			if (currIndex === index)
+			{
+				return currNode.element;
+			}
+		}
+		return undefined;
+	}
+	
+}
+
+
+let linkedList = new LinkedList();
+linkedList.add(1);
+linkedList.add(2);
+linkedList.add(3);
+linkedList.add(4);
+linkedList.add(5);
+//linkedList.addAt(0, "bird");
+console.log(linkedList.head());

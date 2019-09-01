@@ -5,6 +5,12 @@ class Node
         this.data = data;
         this.next = next;
     }
+    
+    toString(stringifier)
+    {
+        return stringifier ? stringifier(this.data) : `${this.data}`;
+    }
+    
 }
 
 /*
@@ -20,15 +26,15 @@ class LinkedList
         };
         this.tail = function ()
         {
-            let tailNode = headNode;
-            if (tailNode !== null)
+            let node = headNode;
+            if (node !== null)
             {
-                while (tailNode.next !== null)
+                while (node.next !== null)
                 {
-                    tailNode = tailNode.next;
+                    node = node.next;
                 }
             }
-            return tailNode;
+            return node;
         };
 
         this.isEmpty = function ()
@@ -49,7 +55,15 @@ class LinkedList
         };
         this.at = function (index)
         {
-            for (let prevNode = null, currNode = headNode, currIndex = 0; currNode !== null; prevNode = currNode, currNode = currNode.next, ++currIndex)
+            if (this.isEmpty()
+             || index < 0 || this.size() < index)
+            {
+                return null;
+            }
+
+            for (let prevNode = null, currNode = headNode, currIndex = 0;
+                 currNode !== null;
+                 prevNode = currNode, currNode = currNode.next, ++currIndex)
             {
                 if (currIndex === index)
                 {
@@ -82,7 +96,7 @@ class LinkedList
         this.addAt = function (index, data)
         {
             if ((this.isEmpty() && index !== 0)
-                || index < 0 || index > this.size())
+             || index < 0 || this.size() < index)
             {
                 return false;
             }
@@ -105,6 +119,7 @@ class LinkedList
             //     }
             // }
             // return false;
+
             let prevNode = this.at(index);
             if (prevNode === undefined)
             {
@@ -126,29 +141,33 @@ class LinkedList
             {
                 return;
             }
-            for (let prevNode = null, currNode = headNode; currNode !== null; prevNode = currNode, currNode = currNode.next)
+            for (let prevNode = null, currNode = headNode;
+                 currNode !== null;
+                 currNode = currNode.next)
             {
                 if (currNode.data === data)
                 {
                     if (prevNode === null)
                     {
-                        headNode = currNode.next;
+                        this.headNode = currNode.next;
                     }
                     else
                     {
                         prevNode.next = currNode.next;
                     }
-                    break;
+                    continue;
                 }
+                prevNode = currNode;
             }
         };
         this.removeAt = function (index)
         {
             if (this.isEmpty()
-                || index < 0 || index >= this.size())
+             || index < 0 || this.size() <= index)
             {
                 return null;
             }
+
             // for (let prevNode = null, currNode = headNode, currIndex = 0;
             //      currNode !== null;
             //      prevNode = currNode, currNode = currNode.next, ++currIndex)
@@ -168,6 +187,7 @@ class LinkedList
             //     }
             // }
             // return null;
+
             let prevNode = this.at(index);
             if (prevNode === undefined)
             {
@@ -192,11 +212,13 @@ class LinkedList
             {
                 return -1;
             }
-            for (let currNode = headNode, currIndex = 0; currNode !== null; currNode = currNode.next, ++currIndex)
+            for (let node = headNode, index = 0;
+                 node !== null;
+                 node = node.next, ++index)
             {
-                if (currNode.data === data)
+                if (node.data === data)
                 {
-                    return currIndex;
+                    return index;
                 }
             }
             return -1;
@@ -207,29 +229,38 @@ class LinkedList
             {
                 return undefined;
             }
-            for (let currNode = headNode, currIndex = 0; currNode !== null; currNode = currNode.next, ++currIndex)
+            for (let node = headNode, _index = 0;
+                 node !== null;
+                 node = node.next, ++_index)
             {
-                if (currIndex === index)
+                if (_index === index)
                 {
-                    return currNode.data;
+                    return node.data;
                 }
             }
             return undefined;
         };
+
+        this.fromArray = function (values)
+        {
+            values.forEach((value) => this.addTail(value));
+        };
+        
         this.toArray = function ()
         {
-            if (this.isEmpty())
-            {
-                return null;
-            }
-            let array = new Array();
+            let nodes = [];
             let node = headNode;
             while (node !== null)
             {
-                array.push(node.data);
+                nodes.push(node.data);
                 node = node.next;
             }
-            return array;
+            return nodes;
+        };
+
+        this.toString = function(stringifier)
+        {
+            return this.toArray().map(node => node.toString(stringifier)).toString();
         };
     }
 }
@@ -249,15 +280,15 @@ class LinkedList
     
     tail()
     {
-        let tailNode = this.headNode;
-        if (tailNode !== null)
+        let node = this.headNode;
+        if (node !== null)
         {
-            while (tailNode.next !== null)
+            while (node.next !== null)
             {
-                tailNode = tailNode.next;
+                node = node.next;
             }
         }
-        return tailNode;
+        return node;
     }
     
     isEmpty()
@@ -279,6 +310,11 @@ class LinkedList
     
     at(index)
     {
+        if (this.isEmpty()
+         || index < 0 || this.size() < index)
+        {
+           return undefined;
+        }
         for (let prevNode = null, currNode = this.headNode, currIndex = 0;
              currNode !== null;
              prevNode = currNode, currNode = currNode.next, ++currIndex)
@@ -319,7 +355,7 @@ class LinkedList
     addAt(index, data)
     {
         if ((this.isEmpty() && index !== 0)
-         || index < 0 || index > this.size())
+         || index < 0 || this.size() < index)
         {
             return false;
         }
@@ -361,18 +397,32 @@ class LinkedList
         return true;
     }
     
-    remove(data)
+    removeHead()
     {
         if (this.isEmpty())
         {
-            return;
+            return null;
         }
+
+        const removedHead = this.headNode;
+        this.headNode = this.headNode.next;
+        return removedHead;
+    }
+    
+    removeTail()
+    {
+        if (this.isEmpty())
+        {
+            return null;
+        }
+        let removedTail = null;
         for (let prevNode = null, currNode = this.headNode;
              currNode !== null;
              prevNode = currNode, currNode = currNode.next)
         {
-            if (currNode.data === data)
+            if (currNode.next === null)
             {
+                removedTail = currNode;
                 if (prevNode === null)
                 {
                     this.headNode = currNode.next;
@@ -384,12 +434,42 @@ class LinkedList
                 break;
             }
         }
+        return removedTail;
+    }
+
+    remove(data)
+    {
+        if (this.isEmpty())
+        {
+            return;
+        }
+        let deletedNodes = [];
+        for (let prevNode = null, currNode = this.headNode;
+             currNode !== null;
+             currNode = currNode.next)
+        {
+            if (currNode.data === data)
+            {
+                deletedNodes.push(currNode);
+                if (prevNode === null)
+                {
+                    this.headNode = currNode.next;
+                }
+                else
+                {
+                    prevNode.next = currNode.next;
+                }
+                continue;
+            }
+            prevNode = currNode;
+        }
+        return deletedNodes;
     }
     
     removeAt(index)
     {
         if (this.isEmpty()
-         || index < 0 || index >= this.size())
+         || index < 0 || this.size() <= index)
         {
             return null;
         }
@@ -414,7 +494,6 @@ class LinkedList
         // }
         // return null;
         
-        
         let prevNode = this.at(index);
         if (prevNode === undefined)
         {
@@ -434,6 +513,25 @@ class LinkedList
         return removedNode.data;
     }
     
+    find(data)
+    {
+        if (this.isEmpty())
+        {
+            return null;
+        }
+
+        for (let node = this.headNode, index = 0;
+             node !== null;
+             node = node.next, ++index)
+        {
+            if (node.data === data)
+            {
+                return node;
+            }
+        }
+        return null;
+    }
+
     indexOf(data)
     {
         if (this.isEmpty())
@@ -441,55 +539,75 @@ class LinkedList
             return -1;
         }
 
-        for (let currNode = this.headNode, currIndex = 0;
-             currNode !== null;
-             currNode = currNode.next, ++currIndex)
+        for (let node = this.headNode, index = 0;
+             node !== null;
+             node = node.next, ++index)
         {
-            if (currNode.data === data)
+            if (node.data === data)
             {
-                return currIndex;
+                return index;
             }
         }
         return -1;
     }
 
-    dataAt(index)
+    elementAt(index)
     {
         if (this.isEmpty()
-         || index < 0 || index >= this.size())
+         || index < 0 || this.size() <= index)
         {
             return undefined;
         }
         
-        for (let currNode = this.headNode, currIndex = 0;
-             currNode !== null;
-             currNode = currNode.next, ++currIndex)
+        for (let node = this.headNode, _index = 0;
+             node !== null;
+             node = node.next, ++_index)
         {
-            if (currIndex === index)
+            if (_index === index)
             {
-                return currNode.data;
+                return node.data;
             }
         }
         return undefined;
     }
     
+    fromArray(values)
+    {
+        values.forEach((value) => this.addTail(value));
+    }
+
     toArray()
     {
-        if (this.isEmpty())
-        {
-            return null;
-        }
-
-        let array = new Array();
+        const nodes = [];
         let node = this.headNode;
         while (node !== null)
         {
-            array.push(node.data);
+            nodes.push(node.data);
             node = node.next;
         }
-        return array;
+        return nodes;
     }
 
+    reverse()
+    {
+        let prevNode = null;
+        
+        for (let currNode = this.headNode;
+             currNode !== null;)
+        {
+            let nextNode = currNode.next;
+            currNode.next = prevNode;
+
+            prevNode = currNode;
+            currNode = nextNode;
+        }
+        this.headNode = prevNode;
+    }
+
+    toString(stringifier)
+    {
+        return this.toArray().map(node => node.toString(stringifier)).toString();
+    }
 }
 
 
@@ -500,11 +618,30 @@ class LinkedList
 //  removeAt: function (index){}
 //}
 
+let arr = [3, 1, 2, 3, 4, 5, 3, 3, 6];
 let linkedList = new LinkedList();
-linkedList.addTail(1);
-linkedList.addTail(2);
-linkedList.addHead(3);
-linkedList.addTail(4);
-linkedList.addTail(5);
-//linkedList.addAt(0, "bird");
-console.log(linkedList.toArray().join(''));
+linkedList.fromArray(arr);
+// linkedList.addTail(3);
+// linkedList.addTail(2);
+// linkedList.addTail(3);
+// linkedList.addTail(3);
+// linkedList.addTail(6);
+// linkedList.addTail(3);
+// linkedList.addTail(4);
+// linkedList.addTail(5);
+// linkedList.addHead(3);
+// linkedList.addTail(3);
+// console.log(linkedList.toString());
+console.log(linkedList.remove(3));
+
+console.log(linkedList.size());
+console.log(linkedList.toString());
+
+//linkedList.reverse();
+// console.log(linkedList.removeHead().data);
+// console.log(linkedList.removeHead().data);
+// console.log(linkedList.removeTail().data);
+
+
+console.log(linkedList.size());
+console.log(linkedList.toString());

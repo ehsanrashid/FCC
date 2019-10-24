@@ -11,7 +11,6 @@ function isSubsequence(str1, str2)
             str1[index1 + 1] === elem
          && str1[index1 + 1] !== str1[index1])
         {
-            console.log(elem);
             return false;
         }
 
